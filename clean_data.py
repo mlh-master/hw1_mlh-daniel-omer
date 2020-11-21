@@ -17,8 +17,8 @@ def rm_ext_and_nan(CTG_features, extra_feature):
     :return: A dictionary of clean CTG called c_ctg
     """
     # ------------------ IMPLEMENT YOUR CODE HERE:------------------------------
-    c_ctg = CTG_features.apply(pd.to_numeric, errors='coerce')
-    c_ctg = c_ctg.drop(extra_feature, axis=1)
+    c_ctg = {feature: (CTG_features[feature].apply(pd.to_numeric, args=('coerce',))).dropna() for feature in
+             CTG_features if feature != extra_feature}
     # --------------------------------------------------------------------------
     return c_ctg
 
@@ -32,17 +32,24 @@ def nan2num_samp(CTG_features, extra_feature):
     """
     c_cdf = {}
     # ------------------ IMPLEMENT YOUR CODE HERE:------------------------------
-    c_cdf = rm_ext_and_nan(CTG_features, extra_feature)
-    for feature in c_cdf.columns:
-        # condition if NaN is in feature column
-        if c_cdf[feature].isnull().values.any():
-            val = np.asarray(c_cdf[feature])
-            # removing NaN values from feature
-            val=val[~np.isnan(val)]
-            # finding indecis of NaN in feature
-            idx = c_cdf[c_cdf[feature].isnull()].index.to_numpy()
-            #  randomize new value from values in feature column in instead of NaN
-            c_cdf[feature][idx] = np.random.choice(val, len(idx))
+    c_ctg = CTG_features.apply(pd.to_numeric, errors='coerce')
+    c_ctg = c_ctg.drop(extra_feature, axis=1)
+    for feature in c_ctg.columns:
+        if c_ctg[feature].isnull().values.any():
+            val = np.asarray(c_ctg[feature])
+            val = val[~np.isnan(val)]
+            idx = c_ctg[c_ctg[feature].isnull()].index.to_numpy()
+            c_ctg[feature][idx] = np.random.choice(val, len(idx))
+            c_cdf[feature] = np.asarray(c_ctg[feature])
+        else:
+            c_cdf[feature] = np.asarray(c_ctg[feature])
+    # test
+    while True:
+        try:
+            type(c_cdf) == dict
+            break
+        except ValueError:
+            print("c_cdf is not a dict")
     # -------------------------------------------------------------------------
     return pd.DataFrame(c_cdf)
 
