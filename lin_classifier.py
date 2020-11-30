@@ -22,7 +22,7 @@ def pred_log(logreg, X_train, y_train, X_test, flag=False):
     logreg.fit(X_train, y_train)
     y_pred_train = logreg.predict(X_train)
     y_pred_log = logreg.predict(X_test)
-    w_log = np.hstack((logreg.intercept_, logreg.coef_))
+    w_log = np.hstack((logreg.intercept_[:,None], logreg.coef_))
     # test
     while True:
         try:
