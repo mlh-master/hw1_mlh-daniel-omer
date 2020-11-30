@@ -19,6 +19,17 @@ def pred_log(logreg, X_train, y_train, X_test, flag=False):
     :return: A two elements tuple containing the predictions and the weightning matrix
     """
     # ------------------ IMPLEMENT YOUR CODE HERE:-----------------------------
+    logreg.fit(X_train, y_train)
+    y_pred_train = logreg.predict(X_train)
+    y_pred_log = logreg.predict(X_test)
+    w_log = np.hstack((logreg.intercept_, logreg.coef_))
+    # test
+    while True:
+        try:
+            np.shape(w_log) == (3,21) # (number of class,number of CTG_features)
+            break
+        except ValueError:
+            print("Weights matrix of logistic regression model  is not in the correct shape ")
 
     # -------------------------------------------------------------------------
     return y_pred_log, w_log
