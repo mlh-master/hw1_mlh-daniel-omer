@@ -20,16 +20,11 @@ def pred_log(logreg, X_train, y_train, X_test, flag=False):
     """
     # ------------------ IMPLEMENT YOUR CODE HERE:-----------------------------
     logreg.fit(X_train, y_train)
-    y_pred_train = logreg.predict(X_train)
+    # y_pred_train = logreg.predict(X_train)
     y_pred_log = logreg.predict(X_test)
-    w_log = np.hstack((logreg.intercept_[:,None], logreg.coef_))
-    # test
-    while True:
-        try:
-            np.shape(w_log) == (3,21) # (number of class,number of CTG_features)
-            break
-        except ValueError:
-            print("Weights matrix of logistic regression model  is not in the correct shape ")
+    w_log = np.hstack((logreg.intercept_[:, None], logreg.coef_))
+    # bias drop
+    w_log = w_log[:,1:]
 
     # -------------------------------------------------------------------------
     return y_pred_log, w_log
@@ -109,6 +104,12 @@ def odds_ratio(w, X, selected_feat='LB'):
              odds_ratio: the odds ratio of the selected feature and label
     """
     # ------------------ IMPLEMENT YOUR CODE HERE:-----------------------------
+    #
+    col = X.columns.get_loc(selected_feat)
+    odd_ratio = np.exp(w[0,col])
+    m_log_odds = np.median(w[0,col]*X[selected_feat])
+    odds = np.exp(m_log_odds)
+
 
     # --------------------------------------------------------------------------
 

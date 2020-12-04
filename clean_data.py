@@ -83,13 +83,15 @@ def rm_outlier(c_feat, d_summary):
         iqr = q3 - q1  # Interquartile range
         fence_low = q1 - 1.5 * iqr
         fence_high = q3 + 1.5 * iqr
-        # finding indices of outliers in feature column
-        idx = c_feat[(c_feat[feature] > fence_low) & (c_feat[feature] < fence_high)].index.to_numpy
-        if np.any(idx):
-            c_no_outlier[feature] = np.asarray(c_feat[feature], dtype=object)
-            continue
-        c_feat[feature][idx] = np.nan
-        c_no_outlier[feature] = np.asarray(c_feat[feature], dtype=object)
+        c_no_outlier[feature]=np.empty(len(c_feat[feature]),dtype=np.float64)
+        # remove outliers
+        # solution with loop
+        for i in range(len(c_feat[feature])):
+            if (c_feat[feature][i]>fence_low) & (c_feat[feature][i]<fence_high):
+                c_no_outlier[feature][i]=c_feat[feature][i]
+            else:
+                c_no_outlier[feature][i]=np.nan
+
     # -------------------------------------------------------------------------
     return pd.DataFrame(c_no_outlier)
 
@@ -103,7 +105,12 @@ def phys_prior(c_cdf, feature, thresh):
     :return: An array of the "filtered" feature called filt_feature
     """
     # ------------------ IMPLEMENT YOUR CODE HERE:-----------------------------
-    raise NotImplementedError()
+    filt_feature = []
+    for i in range(len(c_cdf[feature])):
+        if c_cdf[feature][i] < thresh:
+            filt_feature.append(c_cdf[feature][i])
+    filt_feature=np.array(filt_feature)
+    #raise NotImplementedError()
     # -------------------------------------------------------------------------
     return filt_feature
 
