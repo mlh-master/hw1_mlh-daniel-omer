@@ -125,8 +125,7 @@ def norm_standard(CTG_features, selected_feat=('LB', 'ASTV'), mode='none', flag=
     :return: Dataframe of the normalized/standardazied features called nsd_res
     """
     x, y = selected_feat
-    # ------------------ IMPLEMENT YOUR CODE HERE:------------------------------
-    nsd_res = {}
+    # ------------------ IMPLEMENT YOUR CODE HERE:------------------------------#
     # Default
     if mode is None:
         nsd_res = {x: CTG_features[x], y: CTG_features[y]}
@@ -134,45 +133,44 @@ def norm_standard(CTG_features, selected_feat=('LB', 'ASTV'), mode='none', flag=
     # Feature Scaling
     if mode == 'standard':
         # Standardization
-        Z_x = (CTG_features[x] - np.mean(CTG_features[x])) / np.std(CTG_features[x])
-        Z_y = (CTG_features[y] - np.mean(CTG_features[y])) / np.std(CTG_features[y])
-        nsd_res = {x: Z_x, y: Z_y}
+        for feature in CTG_features.columns:
+            CTG_features[feature] = (CTG_features[feature] - np.mean(CTG_features[feature])) / np.std(CTG_features[feature])
+
         if flag:
             fig1, ax1 = plt.subplots()
             fig1.suptitle('Standarized data for ' + x)
-            ax1.hist(Z_x)
+            ax1.hist(CTG_features[x])
             ax1.set(xlabel=x, ylabel='counts')
             fig2, ax2 = plt.subplots()
             fig2.suptitle('Standarized data for ' + y)
-            ax2.hist(Z_y)
+            ax2.hist(CTG_features[y])
             ax2.set(xlabel=y, ylabel='counts')
     if mode == 'MinMax':
         # Normalization
-        x_norm = (CTG_features[x] - np.min(CTG_features[x])) / (np.max(CTG_features[x]) - np.min(CTG_features[x]))
-        y_norm = (CTG_features[y] - np.min(CTG_features[y])) / (np.max(CTG_features[y]) - np.min(CTG_features[y]))
-        nsd_res = {x: x_norm, y: y_norm}
+        for feature in CTG_features.columns:
+            CTG_features[feature] = (CTG_features[feature] - np.min(CTG_features[feature])) / (np.max(CTG_features[feature]) - np.min(CTG_features[x]))
         if flag:
             fig1, ax1 = plt.subplots()
             fig1.suptitle('Normalization data for ' + x)
-            ax1.hist(x_norm)
+            ax1.hist(CTG_features[x])
             ax1.set(xlabel=x, ylabel='counts')
             fig2, ax2 = plt.subplots()
             fig2.suptitle('Normalization data for ' + y)
-            ax2.hist(y_norm)
+            ax2.hist(CTG_features[y])
             ax2.set(xlabel=y, ylabel='counts')
     if mode == 'mean':
         # Mean normalization
-        x_norm = (CTG_features[x] - np.mean(CTG_features[x])) / (np.max(CTG_features[x]) - np.min(CTG_features[x]))
-        y_norm = (CTG_features[y] - np.mean(CTG_features[y])) / (np.max(CTG_features[y]) - np.min(CTG_features[y]))
-        nsd_res = {x: x_norm, y: y_norm}
+        for feature in CTG_features.columns:
+            CTG_features[feature] = (CTG_features[feature] - np.mean(CTG_features[feature])) / (np.max(CTG_features[feature]) - np.min(CTG_features[feature]))
         if flag:
             fig1, ax1 = plt.subplots()
             fig1.suptitle('mean Normalization data for ' + x)
-            ax1.hist(x_norm)
+            ax1.hist(CTG_features[x])
             ax1.set(xlabel=x, ylabel='counts')
             fig2, ax2 = plt.subplots()
             fig2.suptitle(' mean Normalization data for ' + y)
-            ax2.hist(y_norm)
+            ax2.hist(CTG_features[y])
             ax2.set(xlabel=y, ylabel='counts')
+    nsd_res = CTG_features
     # -------------------------------------------------------------------------
     return pd.DataFrame(nsd_res)
