@@ -19,10 +19,14 @@ def pred_log(logreg, X_train, y_train, X_test, flag=False):
     :return: A two elements tuple containing the predictions and the weightning matrix
     """
     # ------------------ IMPLEMENT YOUR CODE HERE:-----------------------------
-    logreg.fit(X_train, y_train)
-    # y_pred_train = logreg.predict(X_train)
-    y_pred_log = logreg.predict(X_test)
-    w_log = np.hstack((logreg.intercept_[:, None], logreg.coef_))
+    model = logreg.fit(X_train, y_train)
+    # y_pred_train = model.predict(X_train)
+    if flag:
+        y_pred_log = model.predict_proba(X_test)
+    else:
+        y_pred_log = model.predict(X_test)
+
+    w_log = np.hstack((model.intercept_[:, None], model.coef_))
     # bias drop
     w_log = w_log[:,1:]
 
@@ -89,6 +93,15 @@ def cv_kfold(X, y, C, penalty, K, mode):
             for train_idx, val_idx in kf.split(X, y):
                 x_train, x_val = X.iloc[train_idx], X.iloc[val_idx]
         # ------------------ IMPLEMENT YOUR CODE HERE:-----------------------------
+                y_train, y_val = y[train_idx], y[val_idx]
+                x_train_nsd = nsd(x_train,selected_feat=('LB', 'ASTV'),mode=mode)
+                x_val_nsd = nsd(x_val,selected_feat=('LB', 'ASTV'),mode=mode)
+                y_pred, _ =pred_log(logreg,x_train_nsd,y_train,x_val_nsd,flag=True)
+                loss_val_vec[k] = log_loss(y_val,y_pred)
+                k+=1
+            mu = loss_val_vec.mean()
+            std = loss_val_vec.std()
+            validation_dict.append({'C':c,'penalty':p,'mu':mu,'sigma':std})
 
         # --------------------------------------------------------------------------
     return validation_dict
